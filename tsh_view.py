@@ -28,28 +28,30 @@ blank_fig2 = go.Figure(
                  "<br>Count: %{y}<extra></extra>",
                  showlegend=False))
 blank_fig1.update_layout(margin=dict(t=20, b=10, l=20, r=20),
-                   height=300,
-                   font_size=14)
+                         height=300,
+                         font_size=14,
+                         dragmode=False)
 blank_fig1.update_traces(marker_line_color="rgba(209,3,115,1)",
-                   marker_color="rgba(209,3,115,0.5)",
-                   marker_line_width=1)
+                         marker_color="rgba(209,3,115,0.5)",
+                         marker_line_width=1)
 blank_fig1.update_xaxes(range=[0, 28.5],
-                  dtick=7,
-                  tick0=7,
-                  title_text=f"Histogram of total happiness\nfor Sex = {categories[0]}",
-                  title_font_size=13)
+                        dtick=7,
+                        tick0=7,
+                        title_text=f"Histogram of total happiness\nfor Sex = {categories[0]}",
+                        title_font_size=13)
 blank_fig1.update_yaxes(range=[0, 91])
 blank_fig2.update_layout(margin=dict(t=20, b=10, l=20, r=20),
-                   height=300,
-                   font_size=14)
+                         height=300,
+                         font_size=14,
+                         dragmode=False)
 blank_fig2.update_traces(marker_line_color="rgba(158,171,5,1)",
-                   marker_color="rgba(158,171,5,0.5)",
-                   marker_line_width=1)
+                         marker_color="rgba(158,171,5,0.5)",
+                         marker_line_width=1)
 blank_fig2.update_xaxes(range=[0, 28.5],
-                  dtick=7,
-                  tick0=7,
-                  title_text=f"Histogram of total happiness\nfor Sex = {categories[1]}",
-                  title_font_size=13)
+                        dtick=7,
+                        tick0=7,
+                        title_text=f"Histogram of total happiness\nfor Sex = {categories[1]}",
+                        title_font_size=13)
 blank_fig2.update_yaxes(range=[0, 91])
 blank_fig1.add_trace(
     go.Scatter(x=[mean1] * 92,
@@ -64,14 +66,17 @@ blank_fig2.add_trace(
                marker_color="#0085a1",
                hovertemplate="Mean: %{x:.3f}<extra></extra>"))
 
-
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Div([
                 dcc.Graph(id="graph-hist1",
                           figure=blank_fig1,
-                          config={"displayModeBar": False})
+                          config={"displayModeBar": False,
+                                  "doubleClick": False,
+                                  "editable": False,
+                                  "scrollZoom": False,
+                                  "showAxisDragHandles": False})
             ], role="img"),
             html.Div(id="sr-hist1",
                      children=[
@@ -81,14 +86,18 @@ app.layout = dbc.Container([
             html.Div([
                 dcc.Graph(id="graph-hist2",
                           figure=blank_fig2,
-                          config={"displayModeBar": False})
+                          config={"displayModeBar": False,
+                                  "doubleClick": False,
+                                  "editable": False,
+                                  "scrollZoom": False,
+                                  "showAxisDragHandles": False})
             ], role="img"),
             html.Div(id="sr-hist2",
                      children=[
                          f"Histogram of Total happiness for Sex = {categories[1]}"],
                      className="sr-only",
                      **{"aria-live": "polite"})
-        ], xs=12, sm=12, md=6, lg=6, xl=6),
+        ], xs=12, md=6),
         dbc.Col([
             html.Div([
                 dbc.Label("Variable", className="label", html_for="cols-dropdown"),
@@ -101,14 +110,14 @@ app.layout = dbc.Container([
                       className="label",
                       html_for="alt-hyp-dropdown"),
             dbc.Select(id="alt-hyp-dropdown",
-                           options=[
-                               {"label": u"Difference in means \u2260 0 (two-sided)",
-                                "value": "!="},
-                               {"label": "Difference in means < 0 (one-sided)",
-                                "value": "<"},
-                               {"label": "Difference in means > 0 (one-sided)",
-                                "value": ">"}],
-                           value="!="),
+                       options=[
+                            {"label": u"Difference in means \u2260 0 (two-sided)",
+                            "value": "!="},
+                            {"label": "Difference in means < 0 (one-sided)",
+                            "value": "<"},
+                            {"label": "Difference in means > 0 (one-sided)",
+                            "value": ">"}],
+                       value="!="),
             html.Div([
                 dbc.Label("Confidence level",
                           className="label",
@@ -158,7 +167,7 @@ app.layout = dbc.Container([
                         html.Br(),
                         html.P(
                             "Based on the results above, should you accept or reject the null hypothesis?", className="bold-p"),
-                        dcc.Dropdown(id="accept-reject",
+                        dbc.Select(id="accept-reject",
                                         options=[{"label": "Accept the null hypothesis", "value": "accept"},
                                                  {"label": "Reject the null hypothesis",
                                                      "value": "reject"}
@@ -169,7 +178,7 @@ app.layout = dbc.Container([
                     ], id="results", style={"display": "none"}),
                 ])
             ])
-        ], xs=12, sm=12, md=12, lg=12, xl=6)
+        ], xs=12, xl=6)
     ])
 ], fluid=True)
 

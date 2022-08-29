@@ -1,6 +1,6 @@
 import pandas as pd
 
-happy_df = pd.read_csv("data/dis_happy.csv")
+happy_df = pd.read_csv("data/tsh_happy.csv")
 
 alt_dict = {"<": "less", ">": "greater", "!=": "two-sided"}
 

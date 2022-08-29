@@ -1,10 +1,9 @@
-from dash import html, Input, Output, State, exceptions, no_update
+from dash import html, Input, Output, State, exceptions
 import plotly.graph_objects as go
 import scipy.stats as stat
 import numpy as np
 from tsh_view import app
 from tsh_model import get_df, alt_dict
-
 
 
 def hist_hovertext(df):
@@ -43,41 +42,41 @@ def update_histogram(n_clicks, value):
                         hovertemplate="Total happiness score: %{x}" + "<br>Count: %{y}<extra></extra>",
                         showlegend=False))
         fig1.update_layout(margin=dict(t=20, b=10, l=20, r=20),
-                        height=300,
-                        font_size=14)
+                           height=300,
+                           font_size=14)
         fig1.update_traces(marker_line_color="rgba(209,3,115,1)",
-                        marker_color="rgba(209,3,115,0.5)",
-                        marker_line_width=1)
+                           marker_color="rgba(209,3,115,0.5)",
+                           marker_line_width=1)
         fig1.update_xaxes(range=[0, 28.5],
-                        dtick=7,
-                        tick0=7,
-                        title_text=f"Histogram of total happiness\nfor {value} = {categories[0]}",
-                        title_font_size=13)
+                          dtick=7,
+                          tick0=7,
+                          title_text=f"Histogram of total happiness\nfor {value} = {categories[0]}",
+                          title_font_size=13)
         fig1.update_yaxes(range=[0, 91])
         fig2.update_layout(margin=dict(t=20, b=10, l=20, r=20),
-                        height=300,
-                        font_size=14)
+                           height=300,
+                           font_size=14)
         fig2.update_traces(marker_line_color="rgba(158,171,5,1)",
-                        marker_color="rgba(158,171,5,0.5)",
-                        marker_line_width=1)
+                           marker_color="rgba(158,171,5,0.5)",
+                           marker_line_width=1)
         fig2.update_xaxes(range=[0, 28.5],
-                        dtick=7,
-                        tick0=7,
-                        title_text=f"Histogram of total happiness\nfor {value} = {categories[1]}",
-                        title_font_size=13)
+                          dtick=7,
+                          tick0=7,
+                          title_text=f"Histogram of total happiness\nfor {value} = {categories[1]}",
+                          title_font_size=13)
         fig2.update_yaxes(range=[0, 91])
         fig1.add_trace(
             go.Scatter(x=[mean1] * 92,
-                    y=scatter_range,
-                    name="Mean",
-                    marker_color="#0085a1",
-                    hovertemplate="Mean: %{x:.3f}<extra></extra>"))
+                       y=scatter_range,
+                       name="Mean",
+                       marker_color="#0085a1",
+                       hovertemplate="Mean: %{x:.3f}<extra></extra>"))
         fig2.add_trace(
             go.Scatter(x=[mean2] * 92,
-                    y=scatter_range,
-                    name="Mean",
-                    marker_color="#0085a1",
-                    hovertemplate="Mean: %{x:.3f}<extra></extra>"))
+                       y=scatter_range,
+                       name="Mean",
+                       marker_color="#0085a1",
+                       hovertemplate="Mean: %{x:.3f}<extra></extra>"))
         sr_hist1 = f"Histogram of Total happiness for {value} = {categories[0]}"
         sr_hist2 = f"Histogram of Total happiness for {value} = {categories[1]}"
         return fig1, fig2, sr_hist1, sr_hist2
@@ -149,5 +148,5 @@ def accept_or_reject(accept_reject, p, alpha):
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0", port=8080, dev_tools_ui=False)
-    # app.run(debug=True)
+    # app.run(debug=False, host="0.0.0.0", port=8080, dev_tools_ui=False)
+    app.run(debug=True)
