@@ -1,9 +1,12 @@
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 import numpy as np
-from tsh_model import happy_df, get_df
+import plotly.graph_objects as go
+from tsh_model import happy_df, create_blank_figs
 
+categories, blank_fig1, blank_fig2 = create_blank_figs()
+
+# Specify HTML <head> elements
 app = Dash(__name__,
            title="Two-sample Hypothesis testing",
            update_title=None,
@@ -11,64 +14,13 @@ app = Dash(__name__,
            meta_tags=[{"name": "viewport",
                        "content": "width=device-width, initial-scale=1.0, maximum-scale=1.0"}])
 
-categories, hist_df1, hist_df2 = get_df("Sex")
-scatter_range = list(range(0, 93))
-mean1 = np.mean(hist_df1)
-mean2 = np.mean(hist_df2)
-blank_fig1 = go.Figure(
-    go.Histogram(x=hist_df1,
-                 #  customdata=hist_hovertext(hist_df1),
-                 hovertemplate="Total happiness score: %{x}" + \
-                 "<br>Count: %{y}<extra></extra>",
-                 showlegend=False))
-blank_fig2 = go.Figure(
-    go.Histogram(x=hist_df2,
-                 #  customdata=hist_hovertext(hist_df2),
-                 hovertemplate="Total happiness score: %{x}" + \
-                 "<br>Count: %{y}<extra></extra>",
-                 showlegend=False))
-blank_fig1.update_layout(margin=dict(t=20, b=10, l=20, r=20),
-                         height=300,
-                         font_size=14,
-                         dragmode=False)
-blank_fig1.update_traces(marker_line_color="rgba(209,3,115,1)",
-                         marker_color="rgba(209,3,115,0.5)",
-                         marker_line_width=1)
-blank_fig1.update_xaxes(range=[0, 28.5],
-                        dtick=7,
-                        tick0=7,
-                        title_text=f"Histogram of total happiness\nfor Sex = {categories[0]}",
-                        title_font_size=13)
-blank_fig1.update_yaxes(range=[0, 91])
-blank_fig2.update_layout(margin=dict(t=20, b=10, l=20, r=20),
-                         height=300,
-                         font_size=14,
-                         dragmode=False)
-blank_fig2.update_traces(marker_line_color="rgba(158,171,5,1)",
-                         marker_color="rgba(158,171,5,0.5)",
-                         marker_line_width=1)
-blank_fig2.update_xaxes(range=[0, 28.5],
-                        dtick=7,
-                        tick0=7,
-                        title_text=f"Histogram of total happiness\nfor Sex = {categories[1]}",
-                        title_font_size=13)
-blank_fig2.update_yaxes(range=[0, 91])
-blank_fig1.add_trace(
-    go.Scatter(x=[mean1] * 92,
-               y=scatter_range,
-               name="Mean",
-               marker_color="#0085a1",
-               hovertemplate="Mean: %{x:.3f}<extra></extra>"))
-blank_fig2.add_trace(
-    go.Scatter(x=[mean2] * 92,
-               y=scatter_range,
-               name="Mean",
-               marker_color="#0085a1",
-               hovertemplate="Mean: %{x:.3f}<extra></extra>"))
-
+# Specify app layout (HTML <body> elements) using dash.html, dash.dcc and dash_bootstrap_components
+# All component IDs should relate to the Input or Output of callback functions in *_controller.py
 app.layout = dbc.Container([
+    # Row - Graph, User Input and Results
     dbc.Row([
         dbc.Col([
+            # Graph components are placed inside a Div with role="img" to manage UX for screen reader users
             html.Div([
                 dcc.Graph(id="graph-hist1",
                           figure=blank_fig1,
@@ -77,10 +29,10 @@ app.layout = dbc.Container([
                                   "editable": False,
                                   "scrollZoom": False,
                                   "showAxisDragHandles": False})
-            ], role="img"),
+            ], role="img", **{"aria-hidden": "true"}),
+            # A second Div is used to associate alt text with the relevant Graph component to manage the experience for screen reader users, styled using CSS class sr-only
             html.Div(id="sr-hist1",
-                     children=[
-                         f"Histogram of Total happiness for Sex = {categories[0]}"],
+                     children=[f"Histogram of Total happiness for Sex = {categories[0]}"],
                      className="sr-only",
                      **{"aria-live": "polite"}),
             html.Div([
@@ -91,10 +43,9 @@ app.layout = dbc.Container([
                                   "editable": False,
                                   "scrollZoom": False,
                                   "showAxisDragHandles": False})
-            ], role="img"),
+            ], role="img", **{"aria-hidden": "true"}),
             html.Div(id="sr-hist2",
-                     children=[
-                         f"Histogram of Total happiness for Sex = {categories[1]}"],
+                     children=[f"Histogram of Total happiness for Sex = {categories[1]}"],
                      className="sr-only",
                      **{"aria-live": "polite"})
         ], xs=12, md=6),
@@ -102,9 +53,9 @@ app.layout = dbc.Container([
             html.Div([
                 dbc.Label("Variable", className="label", html_for="cols-dropdown"),
                 dbc.Select(id="cols-dropdown",
-                             options=[{"label": x, "value": x}
-                                      for x in happy_df.columns[1:]],
-                             value="Sex")
+                           options=[{"label": x, "value": x}
+                                    for x in happy_df.columns[1:]],
+                           value="Sex")
             ], **{"aria-live": "polite"}),
             dbc.Label("Alternative hypothesis",
                       className="label",
@@ -142,44 +93,42 @@ app.layout = dbc.Container([
             html.Br(),
             dbc.Card([
                 dbc.CardBody([
-                    html.H4("Results", style={"text-align": "center"}),
                     html.Div([
+                        html.H4("Results", style={"text-align": "center"}),
                         html.P("Null hypothesis", className="bold-p"),
-                        html.P(id="null-hyp", **{"aria-live": "polite"}),
+                        html.P(id="null-hyp"),
                         html.P("Alternative hypothesis", className="bold-p"),
-                        html.P(id="alt-hyp", **{"aria-live": "polite"}),
+                        html.P(id="alt-hyp"),
                         html.Br(),
-                        html.P(children=[
+                        html.P([
                             html.Span(id="mean1-text", className="bold-p"),
                             html.Span(id="mean1-value"),
                             html.Span(id="mean2-text", className="bold-p", style={"margin-left": "20px"}),
                             html.Span(id="mean2-value")
                         ]),
-                        # html.P(children=[
-                        #     html.Span("Test statistic: ", className="bold-p"),
-                        #     html.Span(id="t-stat")
-                        # ]),
-                        html.P(children=[
+                        html.P([
                             html.Span("P value: ", className="bold-p"),
                             html.Span(id="p-value"),
                             dcc.Store(id="p-store")
+                        ]),
+                        html.P([
+                            html.Span("Confidence level: ", className="bold-p"),
+                            html.Span(id="conf-level")
                         ]),
                         html.Br(),
                         html.P(
                             "Based on the results above, should you accept or reject the null hypothesis?", className="bold-p"),
                         dbc.Select(id="accept-reject",
-                                        options=[{"label": "Accept the null hypothesis", "value": "accept"},
-                                                 {"label": "Reject the null hypothesis",
-                                                     "value": "reject"}
-                                                 ],
-                                        value=None),
+                                   options=[
+                                    {"label": "Accept the null hypothesis", "value": "accept"},
+                                    {"label": "Reject the null hypothesis", "value": "reject"}
+                                   ],
+                                   value=None),
                         html.Br(),
                         html.P(id="conclusion", children=[])
-                    ], id="results", style={"display": "none"}),
+                    ], id="results", style={"display": "none"}, **{"aria-live": "polite", "aria-atomic":"true"}),
                 ])
             ])
         ], xs=12, xl=6)
     ])
 ], fluid=True)
-
-
