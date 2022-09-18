@@ -1,8 +1,7 @@
 from dash import html, Input, Output, State, exceptions
 import numpy as np
 import plotly.graph_objects as go
-import scipy.stats as stat
-from tsh_model import get_df, alt_dict
+from tsh_model import get_df, perform_t_test
 from tsh_view import app
 
 
@@ -117,8 +116,7 @@ def update_results(n_clicks, value, alternative, alpha):
             alt_hyp = f"The mean total happiness score for {value} = {categories[0]} is NOT equal to the mean total happiness score for {categories[1]}"
         mean1 = np.mean(df1)
         mean2 = np.mean(df2)
-        alt = alt_dict[alternative]
-        t, p = stat.ttest_ind(df1, df2, alternative=alt)
+        p = perform_t_test(df1, df2, alternative)
         return null_hyp, alt_hyp, f"{p:.3f} ({p:.1%})", p, f"{alpha:.0%}", f"Mean for {categories[0]}: ", f"Mean for {categories[1]}: ", f"{mean1:.2f}", f"{mean2:.2f}", {"display": "inline"}, None
 
 

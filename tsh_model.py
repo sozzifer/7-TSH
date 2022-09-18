@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import scipy.stats as stat
 
 # Generate dataframe from csv
 happy_df = pd.read_csv("data/tsh_happy.csv")
@@ -15,6 +16,12 @@ def get_df(value):
     df1 = df["Total happiness"][(df[value] == categories[0])]
     df2 = df["Total happiness"][(df[value] == categories[1])]
     return categories, df1, df2
+
+
+def perform_t_test(df1, df2, alternative):
+    alt = alt_dict[alternative]
+    _, p = stat.ttest_ind(df1, df2, alternative=alt)
+    return p
 
 
 # Create blank figure (UX)
